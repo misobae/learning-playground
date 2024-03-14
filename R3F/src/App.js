@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { Model } from './components/Scene';
 
 function App() {
+  
   return (
     <>
       {/* camera 종류
@@ -20,7 +21,11 @@ function App() {
         <ambientLight intensity={1} color="#ffffff" />
         
         {/* position: 빛의 위치, angle: 빛의 각도, penumbra: 부분 그림자의 강도 */}
-        {/* <spotLight position={[0.6, 0.8, 0.5]} angle={2.6} penumbra={1} /> */}
+        <spotLight
+          position={[0, 1, 0.3]}
+          angle={1.2}
+          penumbra={1}
+        />
 
         {/* 하나의 지점에서 모든 방향으로 빛을 쐬주는 light
           빛이 어디에서 시작했는지 모르기 때문에 빛을 쏘는 방향이 없음(전구 처럼)
@@ -38,6 +43,19 @@ function App() {
               rotation-y={3.6}
               scale={3}
             />
+        </Float>
+
+        {/*
+          Vector3: Three.js에서 사용되는 3차원 벡터
+          subScalar(s: Float):현재 벡터의 각 성분(x, y, z)에서 지정된 스칼라 s를 빼 새로운 성분으로 설정. (현재의 벡터를 수정하고, 수정된 벡터 자체를 반환함)
+          multiplyScalar(s: Float): 현재 벡터의 각 성분(x, y, z)에 지정된 스칼라 s를 곱함. 벡터의 스케일 조절
+          스칼라? : 크기를 가진 양을 나타내는 수학적인 용어. 벡터와 대비되는 개념. 벡터는 크기와 방향을 가지지만 스칼라는 크기만을 나타냄
+        */}
+        <Float rotationIntensity={1} floatIntensity={1} speed={0.5}>
+          <Points points={
+            Array.from({ length: 3000 },
+            () => new THREE.Vector3().random().subScalar(0.5).multiplyScalar(10))}
+          />
         </Float>
 
         <Rig />
@@ -89,17 +107,32 @@ function Lights() {
       </group>
 
       <spotLight
-        castShadow
         ref={front}
         penumbra={0.75}
         angle={Math.PI / 4}
         position={[10, 50, 8]}
         distance={10}
-        intensity={10}
+        intensity={5}
         shadow-mapSize={[2048, 2048]}
       />
     </>
   )
 };
+
+function Points({ points }) {
+  const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  
+  return (
+    <points>
+      <bufferGeometry attach="geometry" {...geometry} />
+      <pointsMaterial
+        size={0.05}
+        color={0xffffff}
+        opacity={0.75}
+        transparent={true}
+      />
+    </points>
+  );
+}
 
 export default App;
